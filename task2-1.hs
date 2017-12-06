@@ -15,8 +15,8 @@ emptyTree = EmptyBinaryTree
 insert :: (Ord a) => BinaryTree a -> a -> BinaryTree a
 insert EmptyBinaryTree val = Leaf val
 insert src@(Leaf val) newval
-    | newval < val = Node val (Leaf newval) (EmptyBinaryTree)
-    | newval > val = Node val (EmptyBinaryTree) (Leaf newval)
+    | newval < val = Node val (Leaf newval) EmptyBinaryTree
+    | newval > val = Node val EmptyBinaryTree (Leaf newval)
     | newval == val = src
 insert src@(Node val left right) newval
     | newval < val = Node val (insert left newval) right
@@ -33,7 +33,7 @@ remove src@(Node val left right) valToRemove
     | valToRemove > val = makeLeafs $ Node val left (remove right valToRemove)
     | valToRemove == val = makeLeafs $ 
         if right == EmptyBinaryTree then left 
-            else (Node newval left newright) where
+            else Node newval left newright where
                 newval = findLeftmostVal right
                 newright = remove right newval
 
@@ -62,14 +62,25 @@ containsElement (Node val left right) target
 nearestGE :: (Ord a) => BinaryTree a -> a -> a
 nearestGE EmptyBinaryTree _ = error "Can't search in empty tree!"
 nearestGE (Leaf val) target = if val >= target then val else error "Not found"
-nearestGE tree target = head $ if allGE /= [] then allGE else error "Not found" where
-    allGE = dropWhile (<target) (listFromTree tree)
+nearestGE tree@(Node val _ _) target = findNearestGE tree target val where
+    findNearestGE :: (Ord a) => BinaryTree a -> a -> a -> a
+    findNearestGE EmptyBinaryTree target previousVal =
+        if previousVal >= target then previousVal else error "Not found"
+    findNearestGE (Leaf val) target previousVal
+        | val >= target = val 
+        | previousVal >= target = previousVal 
+        | otherwise = error "Not found"
+    findNearestGE (Node val left right) target previousVal
+        | target == val = val
+        | target < val = findNearestGE left target val
+        | target > val = findNearestGE right target previousVal
+
 
 -- Создание списка из дерева
 listFromTree :: (Ord a) => BinaryTree a -> [a]
 listFromTree EmptyBinaryTree = []
 listFromTree (Leaf val) = [val]
-listFromTree tree = leftmostVal : (listFromTree newtree) where
+listFromTree tree = leftmostVal : listFromTree newtree where
     leftmostVal = findLeftmostVal tree
     newtree = if isLeaf tree then tree else remove tree leftmostVal
     isLeaf :: (Ord a) => BinaryTree a -> Bool
@@ -87,4 +98,4 @@ treeFromList unsortedList =
         lp = fst $ halves lst
         rp = tail $ snd $ halves lst
         halves list = splitAt (length list `div` 2) list
-    in (Node med (treeFromList lp) (treeFromList rp))
+    in Node med (treeFromList lp) (treeFromList rp)
