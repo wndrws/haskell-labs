@@ -15,7 +15,7 @@ flatMap' :: (a -> [b]) -> [a] -> [b]
 flatMap' fun = foldl' (\ acc x -> fun x ++ acc) []
 
 concat' :: [a] -> [a] -> [a]  
-concat' left right = foldl' (flip (:)) right left
+concat' left right = foldr' (:) right left
 
 filter' :: (a -> Bool) -> [a] -> [a]  
 filter' pred = foldl' (\ acc x -> [x | pred x] ++ acc) []
@@ -27,23 +27,20 @@ minBy' :: (a -> Integer) -> [a] -> a
 minBy' fun (h:t) = foldl' (\acc x -> if fun x < fun acc then x else acc) h t
 
 reverse' :: [a] -> [a]
-reverse' = foldr' (flip (:)) []
+reverse' = foldl' (flip (:)) []
 
 elementAt' :: Int -> [a] -> a
 elementAt' idx lst 
     | idx < 0 || idx > length lst - 1 = error "Out of bounds"
     | otherwise = head $ snd $ 
-        foldr' (
+        foldl' (
             \res@(cnt, acc) x -> 
                 if cnt <= idx then (succ cnt, x : acc) else res
         ) (0, []) lst
 
 -- Находит индекс первого вхождения элемента. Если элемента в списке нет, то возвращает -1.
 indexOf' :: (Eq a) => a -> [a] -> Integer -- (в т.ч. String -> [String] -> Integer)
-indexOf' val lst
-    | val `notElem` lst = -1
-    | otherwise = pred $ fst $ 
-        foldr' (
-            \res@(cnt, acc) x -> 
-                if val `notElem` acc then (succ cnt, x : acc) else res
-        ) (0, []) lst
+indexOf' val lst = if valFound then index else -1 where 
+    (index, valFound) = foldl' (\(idx, isFound) x -> 
+        if x == val then (idx, True) else (if isFound then idx else succ idx, isFound)
+        ) (0, False) lst
