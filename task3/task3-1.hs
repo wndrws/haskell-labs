@@ -62,12 +62,7 @@ instance Num WeirdPeanoNumber where
             multNormalizedUnsigned Zero other = Zero
             multNormalizedUnsigned other Zero = Zero
             multNormalizedUnsigned (Succ a) b = a * b + b
-
-    -- signum a = case normalize a of
-    --     (Succ _) -> Succ Zero
-    --     (Pred _) -> Pred Zero
-    --     _ -> Zero
-
+            
     signum a
         | a > Zero = Succ Zero
         | a < Zero = Pred Zero
