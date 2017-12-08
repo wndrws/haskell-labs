@@ -9,11 +9,6 @@ toInt Zero = 0
 toInt (Succ a) = toInt a + 1
 toInt (Pred a) = toInt a - 1
 
-fromInt :: Int -> WeirdPeanoNumber
-fromInt x | x > 0 = Succ $ fromInt (x - 1)
-          | x < 0 = Pred $ fromInt (x + 1)
-          | otherwise = Zero
-
 instance Eq WeirdPeanoNumber where
     left == right = isEqualNormalized (normalize left) (normalize right) where
         isEqualNormalized :: WeirdPeanoNumber -> WeirdPeanoNumber -> Bool
@@ -51,3 +46,42 @@ instance Ord WeirdPeanoNumber where
         compareNormalized (Succ a) other = case other of
             (Succ b)  -> compareNormalized a b
             _ -> GT
+
+instance Num WeirdPeanoNumber where
+    Zero + other = other
+    other + Zero = other
+    (Succ a) + b = Succ (a + b)
+    (Pred a) + b = Pred (a + b)
+
+    a * b
+        | a >= Zero && b >= Zero = multNormalizedUnsigned (normalize a) (normalize b)
+        | a < Zero && b < Zero = multNormalizedUnsigned (normalize $ abs a) (normalize $ abs b)
+        | otherwise = negate $ abs a * abs b
+        where
+            multNormalizedUnsigned :: WeirdPeanoNumber -> WeirdPeanoNumber -> WeirdPeanoNumber
+            multNormalizedUnsigned Zero other = Zero
+            multNormalizedUnsigned other Zero = Zero
+            multNormalizedUnsigned (Succ a) b = a * b + b
+
+    -- signum a = case normalize a of
+    --     (Succ _) -> Succ Zero
+    --     (Pred _) -> Pred Zero
+    --     _ -> Zero
+
+    signum a
+        | a > Zero = Succ Zero
+        | a < Zero = Pred Zero
+        | otherwise = Zero
+
+    abs a
+        | a >= Zero = a
+        | otherwise = negate a
+
+    negate Zero = Zero
+    negate (Succ a) = Pred (negate a)
+    negate (Pred a) = Succ (negate a)
+
+    fromInteger a
+        | a > 0 = Succ $ fromInteger (a - 1)
+        | a < 0 = Pred $ fromInteger (a + 1)
+        | otherwise = Zero
