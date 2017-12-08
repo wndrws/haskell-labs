@@ -1,6 +1,3 @@
---{-# LANGUAGE InstanceSigs #-} 
--- {-# LANGUAGE MultiParamTypeClasses #-} 
-
 newtype PSet a = PSet { contains :: a -> Bool }
 
 newtype PSetOr a = PSetOr { containsPSetOr :: a -> Bool }
@@ -48,6 +45,13 @@ instance Monoid (PSetRight a) where -- Игнорировать левое мн�
     mempty = PSetRight (const False)
     mappend _ right = right
 
+-- Ниже приведена идея реализации класса Functor:
+-- Суть в том, чтобы наложить ограничения на типы в сигнатуре фунции fmap:
+--                       fmap :: (a -> b) -> f a -> f b 
+-- Нужно заставить Хаскелль понять, что a и b здесь - это функции, возвращающие Bool, а не произвольные типы.
+-- Как это сделать, я не знаю. Ниже приведена попытка, но она не компилируется.
+
+{-
 class Boolean a where
     test :: Bool
 
@@ -61,3 +65,4 @@ newtype PSet' a = PSet' { contains' :: Predicate a }
 instance Functor PSet' where
     fmap :: (Boolean a, Boolean b) => (a -> b) -> f a -> f b 
     fmap f (PSet p) = PSet $ f p
+-}
