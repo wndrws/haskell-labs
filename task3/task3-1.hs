@@ -4,6 +4,12 @@ instance Show WeirdPeanoNumber where
     show Zero = "{0}"
     show wpn = "{" ++ show (toInt wpn) ++ "}"
 
+fromInt :: Int -> WeirdPeanoNumber
+fromInt a
+    | a > 0 = Succ $ fromInt (a - 1)
+    | a < 0 = Pred $ fromInt (a + 1)
+    | otherwise = Zero
+
 toInt :: WeirdPeanoNumber -> Int
 toInt Zero = 0
 toInt (Succ a) = toInt a + 1
@@ -62,7 +68,7 @@ instance Num WeirdPeanoNumber where
             multNormalizedUnsigned Zero other = Zero
             multNormalizedUnsigned other Zero = Zero
             multNormalizedUnsigned (Succ a) b = a * b + b
-            
+
     signum a
         | a > Zero = Succ Zero
         | a < Zero = Pred Zero
@@ -80,3 +86,9 @@ instance Num WeirdPeanoNumber where
         | a > 0 = Succ $ fromInteger (a - 1)
         | a < 0 = Pred $ fromInteger (a + 1)
         | otherwise = Zero
+
+instance Enum WeirdPeanoNumber where
+    succ = Succ
+    pred = Pred
+    toEnum = fromInt
+    fromEnum = toInt
