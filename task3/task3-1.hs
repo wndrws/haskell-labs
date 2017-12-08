@@ -95,3 +95,31 @@ instance Enum WeirdPeanoNumber where
 
 instance Real WeirdPeanoNumber where
     toRational = toRational . toInt
+
+instance Integral WeirdPeanoNumber where
+    toInteger Zero = 0
+    toInteger (Succ a) = toInteger a + 1
+    toInteger (Pred a) = toInteger a - 1
+
+    quotRem dividend divisor
+        | r == Zero = error "Division by zero!"
+        | l == Zero = (Zero, Zero)
+        | signum dividend == signum divisor = (quot, signum dividend * rem)
+        | otherwise = (negate quot, signum dividend * rem)
+        where
+            l = normalize $ abs dividend
+            r = normalize $ abs divisor
+            quot = findQuot l r where
+                findQuot a b
+                    | a < b = Zero
+                    | b == Succ Zero = a
+                    | otherwise = Succ $ findQuot (a - b) b
+            rem | l < r = l
+                | l == r = Zero
+                | otherwise = l - r * quot
+
+-- Проверка
+fun a b c d e = succ a * (b `div` c) + ((-d) `quot` e) - e * e
+expected = fun 92 15 4 (-3) 2
+actual = fun (fromInt 92) (fromInt 15) (fromInt 4) (fromInt (-3)) (fromInt 2)
+isCorrect = expected == toInteger actual
