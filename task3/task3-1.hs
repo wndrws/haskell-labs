@@ -92,3 +92,6 @@ instance Enum WeirdPeanoNumber where
     pred = Pred
     toEnum = fromInt
     fromEnum = toInt
+
+instance Real WeirdPeanoNumber where
+    toRational = toRational . toInt
