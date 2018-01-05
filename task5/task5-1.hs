@@ -15,5 +15,11 @@ rheadLens = lens getter setter where
 
 errorEmptyList = error "Cannot focus on an empty ReverseList"
 
+-- Примеры для rheadLens
 rhead :: ReverseList a -> a
 rhead = view rheadLens
+
+rlist = fromList [1..5]
+rheadLens_Example1 = rhead rlist -- Выведет голову списка R[1..5], то есть число 5
+rheadLens_Example2 = over rheadLens (*2) rlist -- Выведет список с удвоенной головой, т.е. числом 10 вместо 5
+rheadLens_Example3 = fromList [(x,y) | x <- [1..3], y <- ['a'..'z']] ^. rheadLens . _2 -- Композиция линз (выведет 'z')
