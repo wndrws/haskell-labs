@@ -38,3 +38,12 @@ insert dlist idx elem = if idx < 0 then error "Negative index" else insert' dlis
         rec = DCons left newval newright
         newright = DCons rec val (DCons newright rh rt)
     insert' (DCons left val right) cnt newval = DCons left val $ insert' right (pred cnt) newval
+    
+delete :: DList a -> Int -> DList a
+delete DEmpty _ = error "Empty list"
+delete dlist idx = if idx < 0 then error "Negative index" else delete' dlist idx where
+    delete' :: DList a -> Int -> DList a
+    delete' (DCons _ _ DEmpty) 0 = DEmpty
+    delete' (DCons _ _ DEmpty) _ = error "Index out of bounds"
+    delete' (DCons left _ (DCons _ rh rt)) 0 = DCons left rh rt 
+    delete' (DCons left val right) cnt = DCons left val $ delete' right (pred cnt)
