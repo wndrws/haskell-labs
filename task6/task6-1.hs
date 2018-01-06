@@ -18,3 +18,10 @@ list2dlist lst = list2dlist' DEmpty lst where
     list2dlist' left (h:t) = rec where
         rec = DCons left h (list2dlist' rec t)
 
+(!!) :: DList a -> Int -> a
+DEmpty !! _ = error "Empty list"
+dlist !! idx = if idx < 0 then error "Negative index" else dlist `index` idx where
+    index :: DList a -> Int -> a
+    index (DCons _ val _) 0 = val
+    index (DCons _ _ DEmpty) _ = error "Index out of bounds"
+    index (DCons _ _ right) n = right `index` pred n
