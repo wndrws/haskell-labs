@@ -1,5 +1,6 @@
 import Data.Stream
 
+-- Хитро вычисляем мономы, чтобы при больших n не иметь дело с факториалом
 monom :: Double -> Integer -> Double
 monom x n = sign * product (fmap ((x/) . fromInteger) [1..(2*n - 1)]) where
     sign = if even (n - 1) then 1 else (-1)
