@@ -24,4 +24,17 @@ dlist !! idx = if idx < 0 then error "Negative index" else dlist `index` idx whe
     index :: DList a -> Int -> a
     index (DCons _ val _) 0 = val
     index (DCons _ _ DEmpty) _ = error "Index out of bounds"
-    index (DCons _ _ right) n = right `index` pred n
+    index (DCons _ _ right) cnt = right `index` pred cnt
+
+insert :: DList a -> Int -> a -> DList a
+insert dlist idx elem = if idx < 0 then error "Negative index" else insert' dlist idx elem where
+    insert' :: DList a -> Int -> a -> DList a
+    insert' DEmpty 0 newval = DCons DEmpty newval DEmpty
+    insert' DEmpty _ _ = error "Index out of bounds"
+    insert' (DCons left val DEmpty) 0 newval = rec where
+        rec = DCons left newval right
+        right = DCons rec val DEmpty
+    insert' (DCons left val (DCons _ rh rt)) 0 newval = rec where
+        rec = DCons left newval newright
+        newright = DCons rec val (DCons newright rh rt)
+    insert' (DCons left val right) cnt newval = DCons left val $ insert' right (pred cnt) newval
