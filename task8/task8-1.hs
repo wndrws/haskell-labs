@@ -35,8 +35,8 @@ showType (Str _) = "Str"
 showType (List _) = "List"
 showType (Fun _) = "Fun"
 
-errorUnary op a = error $ "Cannot perform '" ++ show op ++ "' on " ++ showType a
-errorBinary op a b = error $ "Cannot perform '" ++ show op ++ "' on" ++ showType a ++ " and " ++ showType b
+errorUnary op a = error $ "Cannot perform " ++ show op ++ " on " ++ showType a
+errorBinary op a b = error $ "Cannot perform " ++ show op ++ " on " ++ showType a ++ " and " ++ showType b
 
 instance Num Dyn where
     (Num l) + (Num r) = Num (l + r)
