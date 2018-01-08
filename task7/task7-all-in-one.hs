@@ -23,19 +23,13 @@ enqueueRight (Deque i o) x = Deque i (x:o)
 dequeueLeft :: Deque a -> (Deque a, a)
 dequeueLeft (Deque [] []) = error "Deque is empty"
 dequeueLeft (Deque [] [x]) = (emptyDeque, x)
-dequeueLeft (Deque [x] o) = (Deque newi newo, x) where
-    newi = reverse . snd $ hh
-    newo = fst hh
-    hh = halves o
+dequeueLeft (Deque [x] o) = let (lhalf, rhalf) = halves o in (Deque (reverse rhalf) lhalf, x)
 dequeueLeft (Deque (hi:ti) o) = (Deque ti o, hi)
 
 dequeueRight :: Deque a -> (Deque a, a)
 dequeueRight (Deque [] []) = error "Deque is empty"
 dequeueRight (Deque [x] []) = (emptyDeque, x)
-dequeueRight (Deque i [x]) = (Deque newi newo, x) where
-    newi = fst hh
-    newo = reverse . snd $ hh
-    hh = halves i
+dequeueRight (Deque i [x]) = let (lhalf, rhalf) = halves i in (Deque lhalf (reverse rhalf), x)
 dequeueRight (Deque i (ho:to)) = (Deque i to, ho)
 
 -- Функция для разделения списка одновременно с поиском его середины 
