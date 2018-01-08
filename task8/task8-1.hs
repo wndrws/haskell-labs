@@ -82,5 +82,22 @@ apply _ = error "This value is not a function"
 (Str a) !!! n = Str [a !! n]
 other !!! n = error $ "Indexing is supported for " ++ showType other
 
+(+++) :: Dyn -> Dyn -> Dyn
+(Str l) +++ (Str r) = Str (l ++ r)
+(List l) +++ (List r) = List (l ++ r)
+(List l) +++ r = List (l ++ [r])
+l +++ (List r) = List (l : r)
+a +++ b = errorBinary "(+++)" a b
+
+atoi :: Dyn -> Dyn
+atoi (Str a) = Num $ read a
+atoi a = errorUnary "atoi" a
+
+itoa :: Dyn -> Dyn
+itoa (Num a) = Str $ show a
+itoa a = errorUnary "itoa" a
+
 someDyn = List [Str "Hey!", List [Num 2 * Num 3, Fun (\Void -> Str "Wow")], Void]
-testDyn = apply (someDyn !!! 1 !!! 1) Void
+testDyn = apply (someDyn !!! 1 !!! 1) Void +++ itoa (Num 42)
+
+-- Комбинаторы
