@@ -121,3 +121,21 @@ m = s i i
 testM = apply (m i) (Str "Hey") -- Выводит "Hey", что подтверждает работоспособность M-комбинатора
 -- На всякий случай доказательство того, что II x = x:
 testII = apply (apply i i) (List [Num 10, Str "Ten"])
+
+-- UPDATE: вариант, где все комбинаторы выражены как простой Dyn
+
+k' :: Dyn
+k' = Fun (Fun . const)
+
+s' :: Dyn
+s' = Fun (\x -> Fun (\y -> Fun (\z -> apply (apply x z) (apply y z))))
+
+i' :: Dyn
+i' = Fun (apply (apply (apply s' k') k'))
+
+m' :: Dyn
+m' = Fun (apply (apply (apply s' i') i'))
+
+testI' = apply i' (Num 42)
+testII' = apply (apply i' i') (List [Num 10, Str "Ten"])
+testM' = apply (apply m' i') (Str "Hey")
