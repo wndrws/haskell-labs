@@ -101,3 +101,23 @@ someDyn = List [Str "Hey!", List [Num 2 * Num 3, Fun (\Void -> Str "Wow")], Void
 testDyn = apply (someDyn !!! 1 !!! 1) Void +++ itoa (Num 42)
 
 -- Комбинаторы
+
+k :: Dyn
+k = Fun (\x -> Fun (\_ -> x))
+
+s :: Dyn -> Dyn -> Dyn -> Dyn
+s x y z = apply (apply x z) (apply y z)
+
+i :: Dyn
+i = Fun (s k k)
+
+testI = apply i (Num 42) -- Выводит 42, что и ожидается (следовательно, комбинаторы s и k работают)
+
+-- Комбинатор M = S(I,I)
+m :: Dyn -> Dyn
+m = s i i
+
+-- Проверка M-комбинатора основана на том факте, что M x = x x, откуда M I x = I I x = I x = x
+testM = apply (m i) (Str "Hey") -- Выводит "Hey", что подтверждает работоспособность M-комбинатора
+-- На всякий случай доказательство того, что II x = x:
+testII = apply (apply i i) (List [Num 10, Str "Ten"])
