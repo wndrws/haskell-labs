@@ -103,7 +103,7 @@ testDyn = apply (someDyn !!! 1 !!! 1) Void +++ itoa (Num 42)
 -- Комбинаторы
 
 k :: Dyn
-k = Fun (\x -> Fun (\_ -> x))
+k = Fun (Fun . const)
 
 s :: Dyn -> Dyn -> Dyn -> Dyn
 s x y z = apply (apply x z) (apply y z)
